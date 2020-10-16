@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import ru.arcanite.friendsposts.friends.UserRepo
 import ru.arcanite.friendsposts.network.ApiHelper
 import ru.arcanite.friendsposts.network.UserApi
 
@@ -16,6 +17,8 @@ class ListViewModel : ViewModel() {
     private val mApiHelper: ApiHelper = ApiHelper()
     private val mRequestState: MutableLiveData<RequestState> = MutableLiveData()
 
+    private val mUserList: MutableLiveData<List<UserApi.UserPlain>> = MutableLiveData()
+
     init {
         mRequestState.value = RequestState.NONE
     }
@@ -24,6 +27,9 @@ class ListViewModel : ViewModel() {
     enum class RequestState {
         NONE, ERROR, IN_PROGRESS, SUCCESS, FAILED
     }
+
+    fun getUserList(): LiveData<List<UserApi.UserPlain>> = mUserList
+
 
     fun getRequest() {
         mRequestState.postValue(RequestState.IN_PROGRESS)
@@ -41,6 +47,7 @@ class ListViewModel : ViewModel() {
                         }
                     }
                     mRequestState.postValue(RequestState.SUCCESS)
+                    mUserList.postValue(users)
                     return
                 }
                 mRequestState.postValue(RequestState.FAILED)

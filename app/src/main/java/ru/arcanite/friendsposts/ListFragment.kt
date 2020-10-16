@@ -10,8 +10,13 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import ru.arcanite.friendsposts.friends.FriendsActivity
+import java.io.Serializable
 
 class ListFragment : Fragment() {
+
+    companion object {
+        const val EXTRA = "LIST_EXTRA"
+    }
 
     private var mListViewModel: ListViewModel? = null
     override fun onCreateView(
@@ -42,12 +47,19 @@ class ListFragment : Fragment() {
                     ListViewModel.RequestState.SUCCESS -> {
                         Toast.makeText(context, "Request success", Toast.LENGTH_SHORT).show()
                         clickButton.isEnabled = true
-                        startActivity(Intent(activity, FriendsActivity::class.java))
+
                     }
                 }
             }
         )
 
+        mListViewModel?.getUserList()?.observe(viewLifecycleOwner, { users ->
+            run {
+                val intent = Intent(activity, FriendsActivity::class.java)
+                intent.putExtra(EXTRA, users as Serializable)
+                startActivity(intent)
+            }
+        })
         clickButton.setOnClickListener {
             mListViewModel?.getRequest()
         }

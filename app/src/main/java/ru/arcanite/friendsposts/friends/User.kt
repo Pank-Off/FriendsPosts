@@ -1,6 +1,8 @@
 package ru.arcanite.friendsposts.friends
 
-class User {
+import java.io.Serializable
+
+class User : Serializable {
     private var name: String? = null
     private var email: String? = null
     private var website: String? = null

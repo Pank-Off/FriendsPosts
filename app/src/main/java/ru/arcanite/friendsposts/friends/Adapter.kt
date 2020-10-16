@@ -6,11 +6,17 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import ru.arcanite.friendsposts.R
+import ru.arcanite.friendsposts.network.UserApi
 
 class Adapter : RecyclerView.Adapter<Adapter.FriendsViewHolder>() {
-    private var mData: List<User> = ArrayList()
+    private var mData: List<UserApi.UserPlain> = ArrayList()
+    private var listener: OnItemClickListener? = null
 
-    fun setData(data: List<User>) {
+    fun attachListener(onItemClickListener: OnItemClickListener) {
+        listener = onItemClickListener
+    }
+
+    fun setData(data: List<UserApi.UserPlain>) {
         mData = data
         notifyDataSetChanged()
     }
@@ -27,9 +33,10 @@ class Adapter : RecyclerView.Adapter<Adapter.FriendsViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: FriendsViewHolder, position: Int) {
-        val user: User = mData[position]
+        val user: UserApi.UserPlain = mData[position]
         holder.mEmail.text = user.getEmail()
         holder.mName.text = user.getName()
+        holder.itemView.setOnClickListener { listener?.onClick(position) }
     }
 
     override fun getItemCount(): Int = mData.size

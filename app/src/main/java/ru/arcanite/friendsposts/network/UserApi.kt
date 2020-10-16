@@ -2,10 +2,11 @@ package ru.arcanite.friendsposts.network
 
 import retrofit2.Call
 import retrofit2.http.GET
+import java.io.Serializable
 
 interface UserApi {
 
-    class UserPlain {
+    class UserPlain : Serializable {
         private val name: String? = null
         private val email: String? = null
         private val website: String? = null

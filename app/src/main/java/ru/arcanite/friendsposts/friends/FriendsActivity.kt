@@ -1,31 +1,35 @@
 package ru.arcanite.friendsposts.friends
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import ru.arcanite.friendsposts.ListFragment
 import ru.arcanite.friendsposts.R
+import ru.arcanite.friendsposts.network.UserApi
 
 class FriendsActivity : AppCompatActivity() {
 
     private var mFriendsViewModel: FriendsViewModel? = null
-    private val users: List<User> = ArrayList(
-        listOf(
-            User("Kirill", "yandex.ru", "site1"),
-            User("Irina", "mail.ru", "site2"),
-        )
-    )
+    private var users: List<UserApi.UserPlain> = ArrayList()
 
     val adapter: Adapter = Adapter()
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_friends)
-
+        users = intent.getSerializableExtra(ListFragment.EXTRA) as List<UserApi.UserPlain>
         val recyclerView: RecyclerView = findViewById(R.id.friends_list)
 
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(baseContext)
         adapter.setData(users)
+        adapter.attachListener(object : OnItemClickListener {
+            override fun onClick(position: Int) {
+                Toast.makeText(baseContext, position.toString(), Toast.LENGTH_SHORT).show()
+            }
+        })
 //        val observer: Observer<List<User>> = object : Observer<List<User>> {
 //            override fun onChanged(users: List<User>) {
 //
