@@ -1,5 +1,6 @@
 package ru.arcanite.friendsposts
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,7 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import ru.arcanite.friendsposts.friends.FriendsActivity
 
 class ListFragment : Fragment() {
 
@@ -27,15 +29,21 @@ class ListFragment : Fragment() {
         val clickButton: Button = view.findViewById(R.id.click_btn)
         mListViewModel?.getProgress()?.observe(viewLifecycleOwner,
             { requestState ->
-                if (requestState == ListViewModel.RequestState.FAILED) {
-                    Toast.makeText(context, "Request error", Toast.LENGTH_SHORT).show()
-                    clickButton.isEnabled = true
-                } else if (requestState == ListViewModel.RequestState.IN_PROGRESS) {
-                    Toast.makeText(context, "Request in progress", Toast.LENGTH_SHORT).show()
-                    clickButton.isEnabled = false
-                } else if (requestState == ListViewModel.RequestState.SUCCESS) {
-                    Toast.makeText(context, "Request success", Toast.LENGTH_SHORT).show()
-                    clickButton.isEnabled = true
+
+                when (requestState) {
+                    ListViewModel.RequestState.FAILED -> {
+                        Toast.makeText(context, "Request error", Toast.LENGTH_SHORT).show()
+                        clickButton.isEnabled = true
+                    }
+                    ListViewModel.RequestState.IN_PROGRESS -> {
+                        Toast.makeText(context, "Request in progress", Toast.LENGTH_SHORT).show()
+                        clickButton.isEnabled = false
+                    }
+                    ListViewModel.RequestState.SUCCESS -> {
+                        Toast.makeText(context, "Request success", Toast.LENGTH_SHORT).show()
+                        clickButton.isEnabled = true
+                        startActivity(Intent(activity, FriendsActivity::class.java))
+                    }
                 }
             }
         )
@@ -45,6 +53,7 @@ class ListFragment : Fragment() {
         }
 
     }
+
 
 }
 

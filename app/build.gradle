@@ -37,10 +37,14 @@ dependencies {
     testImplementation 'junit:junit:4.13'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+    //MVVM
     implementation "androidx.lifecycle:lifecycle-viewmodel:2.3.0-beta01"
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
 
-
+    //Recycler
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    //Retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.8.1'
     implementation 'com.squareup.retrofit2:converter-gson:2.8.1'
 }
