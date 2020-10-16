@@ -47,25 +47,20 @@ class ListFragment : Fragment() {
                     ListViewModel.RequestState.SUCCESS -> {
                         Toast.makeText(context, "Request success", Toast.LENGTH_SHORT).show()
                         clickButton.isEnabled = true
-
                     }
                 }
             }
         )
 
         mListViewModel?.getUserList()?.observe(viewLifecycleOwner, { users ->
-            run {
-                val intent = Intent(activity, FriendsActivity::class.java)
-                intent.putExtra(EXTRA, users as Serializable)
-                startActivity(intent)
-            }
+            val intent = Intent(activity, FriendsActivity::class.java)
+            intent.putExtra(EXTRA, users as Serializable)
+            startActivity(intent)
         })
+
         clickButton.setOnClickListener {
             mListViewModel?.getRequest()
         }
-
     }
-
-
 }
 

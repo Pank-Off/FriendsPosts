@@ -26,6 +26,19 @@
             tools:text="Email"
             android:layout_height="wrap_content"
             android:textSize="16sp" />
+
+        <FrameLayout
+            android:id="@+id/expandableLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="visible">
+            <TextView
+                android:id="@+id/post"
+                android:layout_width="match_parent"
+                android:text="Post"
+                android:layout_height="wrap_content"
+                android:textSize="50sp" />
+        </FrameLayout>
     </LinearLayout>
 
     <!--    <WebView-->

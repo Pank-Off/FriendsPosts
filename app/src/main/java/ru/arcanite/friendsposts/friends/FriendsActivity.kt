@@ -1,6 +1,7 @@
 package ru.arcanite.friendsposts.friends
 
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -26,8 +27,8 @@ class FriendsActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(baseContext)
         adapter.setData(users)
         adapter.attachListener(object : OnItemClickListener {
-            override fun onClick(position: Int) {
-                Toast.makeText(baseContext, position.toString(), Toast.LENGTH_SHORT).show()
+            override fun onClick(user: UserApi.UserPlain, itemView: View) {
+                Toast.makeText(baseContext, user.getName(), Toast.LENGTH_SHORT).show()
             }
         })
 //        val observer: Observer<List<User>> = object : Observer<List<User>> {
