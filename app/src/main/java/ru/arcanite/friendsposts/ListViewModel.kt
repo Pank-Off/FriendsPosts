@@ -4,20 +4,19 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import retrofit2.Call
-import retrofit2.Callback
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import retrofit2.Response
-import ru.arcanite.friendsposts.friends.UserRepo
 import ru.arcanite.friendsposts.network.ApiHelper
 import ru.arcanite.friendsposts.network.UserApi
-
 
 class ListViewModel : ViewModel() {
 
     private val mApiHelper: ApiHelper = ApiHelper()
+    val userRepo: UserRepo = UserRepo()
+    val users: ArrayList<User> = ArrayList()
     private val mRequestState: MutableLiveData<RequestState> = MutableLiveData()
-
-    private val mUserList: MutableLiveData<List<UserApi.UserPlain>> = MutableLiveData()
 
     init {
         mRequestState.value = RequestState.NONE
@@ -28,35 +27,47 @@ class ListViewModel : ViewModel() {
         NONE, ERROR, IN_PROGRESS, SUCCESS, FAILED
     }
 
-    fun getUserList(): LiveData<List<UserApi.UserPlain>> = mUserList
-
-
-    fun getRequest() {
+    fun getUser() = users
+    fun getRequest() = runBlocking {
         mRequestState.postValue(RequestState.IN_PROGRESS)
         val apiHelper = mApiHelper.getUserApi()
-        apiHelper.getAll().enqueue(object : Callback<List<UserApi.UserPlain>> {
-            override fun onResponse(
-                call: Call<List<UserApi.UserPlain>>,
-                response: Response<List<UserApi.UserPlain>>
-            ) {
-                if (response.isSuccessful && response.body() != null) run {
-                    val users: List<UserApi.UserPlain>? = response.body()
-                    if (users != null) {
-                        for (u in users) {
-                            Log.d("UserInfo: ", u.toString())
-                        }
-                    }
-                    mRequestState.postValue(RequestState.SUCCESS)
-                    mUserList.postValue(users)
-                    return
-                }
-                mRequestState.postValue(RequestState.FAILED)
-            }
+        val job1 = GlobalScope.launch {
+            getUserListRequest(apiHelper)
+        }
+        job1.join()
+        val job2 = GlobalScope.launch {
+            getUserPostsListRequest(apiHelper)
+        }
 
-            override fun onFailure(call: Call<List<UserApi.UserPlain>>, t: Throwable) {
-                mRequestState.postValue(RequestState.FAILED)
-                Log.e(javaClass.simpleName, t.toString())
+        job2.join()
+    }
+
+    private fun getUserPostsListRequest(apiHelper: UserApi) {
+        val response: Response<List<UserApi.UserPosts>> = apiHelper.getPosts().execute()
+        if (response.isSuccessful && response.body() != null) run {
+            val json: List<UserApi.UserPosts>? = response.body()
+            if (json != null) {
+                for (u in json) {
+                    Log.d("UserInfoPost: ", u.toString())
+                    users[u.getUserId() - 1].setPosts(u.getTitle(), u.getBody())
+                }
             }
-        })
+        }
+
+        mRequestState.postValue(RequestState.SUCCESS)
+    }
+
+    private fun getUserListRequest(apiHelper: UserApi) {
+        val response: Response<List<UserApi.UserPlain>> = apiHelper.getAll().execute()
+
+        if (response.isSuccessful && response.body() != null) run {
+            val json: List<UserApi.UserPlain>? = response.body()
+            if (json != null) {
+                for (u in json) {
+                    Log.d("UserInfo: ", u.toString())
+                    users.add(User(u.getId(), u.getName(), u.getEmail(), u.getWebsite()))
+                }
+            }
+        }
     }
 }

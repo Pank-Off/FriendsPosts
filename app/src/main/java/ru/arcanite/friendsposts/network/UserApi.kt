@@ -7,13 +7,12 @@ import java.io.Serializable
 interface UserApi {
 
     class UserPlain : Serializable {
+
+        private val id: String? = null
         private val name: String? = null
         private val email: String? = null
         private val website: String? = null
         private var isExpanded: Boolean = false
-        override fun toString(): String {
-            return "UserPlain(name=$name, email=$email, website=$website)"
-        }
 
         fun getName(): String? {
             return name
@@ -27,34 +26,34 @@ interface UserApi {
             return website
         }
 
-        fun setExpanded(expanded: Boolean) {
-            isExpanded = expanded
+        fun getId(): String? {
+            return id
         }
 
-        fun isExpanded(): Boolean {
-            return isExpanded
+        override fun toString(): String {
+            return "UserPlain(id=$id, name=$name, email=$email, website=$website)"
         }
     }
 
     class UserPosts : Serializable {
         private val title: String? = null
         private val body: String? = null
-        private val userId: Int? = null
+        private val userId: Int = 0
 
-        fun getUserId(): Int? {
+        fun getUserId(): Int {
             return userId
         }
 
-        fun getName(): String? {
+        fun getTitle(): String? {
             return title
         }
 
-        fun getEmail(): String? {
+        fun getBody(): String? {
             return body
         }
 
         override fun toString(): String {
-            return "UserPosts(title=$title, body=$body)"
+            return "UserPosts(title=$title, body=$body, userId=$userId)"
         }
     }
 

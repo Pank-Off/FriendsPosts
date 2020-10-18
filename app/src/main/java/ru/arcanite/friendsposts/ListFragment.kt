@@ -15,7 +15,7 @@ import java.io.Serializable
 class ListFragment : Fragment() {
 
     companion object {
-        const val EXTRA = "LIST_EXTRA"
+        const val EXTRA_USERS = "LIST_EXTRA_USERS"
     }
 
     private var mListViewModel: ListViewModel? = null
@@ -31,10 +31,10 @@ class ListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         mListViewModel = activity?.let { ViewModelProvider(it) }?.get(ListViewModel::class.java)
 
+        val intent = Intent(activity, FriendsActivity::class.java)
         val clickButton: Button = view.findViewById(R.id.click_btn)
         mListViewModel?.getProgress()?.observe(viewLifecycleOwner,
             { requestState ->
-
                 when (requestState) {
                     ListViewModel.RequestState.FAILED -> {
                         Toast.makeText(context, "Request error", Toast.LENGTH_SHORT).show()
@@ -46,18 +46,14 @@ class ListFragment : Fragment() {
                     }
                     ListViewModel.RequestState.SUCCESS -> {
                         Toast.makeText(context, "Request success", Toast.LENGTH_SHORT).show()
+                        val users: List<User>? = mListViewModel?.getUser()
+                        intent.putExtra(EXTRA_USERS, users as Serializable)
+                        startActivity(intent)
                         clickButton.isEnabled = true
                     }
                 }
             }
         )
-
-        mListViewModel?.getUserList()?.observe(viewLifecycleOwner, { users ->
-            val intent = Intent(activity, FriendsActivity::class.java)
-            intent.putExtra(EXTRA, users as Serializable)
-            startActivity(intent)
-        })
-
         clickButton.setOnClickListener {
             mListViewModel?.getRequest()
         }

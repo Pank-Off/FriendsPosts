@@ -1,31 +1,48 @@
 package ru.arcanite.friendsposts.friends
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
+import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.arcanite.friendsposts.R
-import ru.arcanite.friendsposts.network.UserApi
+import ru.arcanite.friendsposts.User
 
 class Adapter : RecyclerView.Adapter<Adapter.FriendsViewHolder>() {
-    private var mData: List<UserApi.UserPlain> = ArrayList()
+
+    private var mUsersData: List<User> = ArrayList()
     private var listener: OnItemClickListener? = null
 
     fun attachListener(onItemClickListener: OnItemClickListener) {
         listener = onItemClickListener
     }
 
-    fun setData(data: List<UserApi.UserPlain>) {
-        mData = data
+    fun setData(usersData: List<User>) {
+        mUsersData = usersData
         notifyDataSetChanged()
     }
 
     class FriendsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val mName: TextView = itemView.findViewById(R.id.name)
-        val mEmail: TextView = itemView.findViewById(R.id.email)
-        val expandableLayout: FrameLayout = itemView.findViewById(R.id.expandableLayout)
+        private val postsAdapter: PostsAdapter = PostsAdapter()
+        private val mName: TextView = itemView.findViewById(R.id.name)
+        private val mEmail: TextView = itemView.findViewById(R.id.email)
+        private val recyclerView: RecyclerView = itemView.findViewById(R.id.posts_list)
+        val expandableLayout: LinearLayout = itemView.findViewById(R.id.expandableLayout)
+
+        init {
+            recyclerView.adapter = postsAdapter
+            recyclerView.layoutManager = LinearLayoutManager(itemView.context)
+        }
+
+        fun onBind(user: User) {
+            mEmail.text = user.getEmail()
+            mName.text = user.getName()
+            Log.d(javaClass.simpleName, user.toString())
+            postsAdapter.setData(user.getBodyList(), user.getTitleList())
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FriendsViewHolder {
@@ -35,18 +52,15 @@ class Adapter : RecyclerView.Adapter<Adapter.FriendsViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: FriendsViewHolder, position: Int) {
-        val user: UserApi.UserPlain = mData[position]
-        holder.mEmail.text = user.getEmail()
-        holder.mName.text = user.getName()
+        val user: User = mUsersData[position]
+        holder.onBind(user)
         holder.itemView.setOnClickListener {
-            user.setExpanded(!user.isExpanded())
+            listener?.onClick(user)
             notifyItemChanged(position)
         }
         val isExpanded = user.isExpanded()
         holder.expandableLayout.visibility = if (isExpanded) View.VISIBLE else View.GONE
-        //   holder.itemView.setOnClickListener { listener?.onClick(user, holder.itemView) }
     }
 
-    override fun getItemCount(): Int = mData.size
-
+    override fun getItemCount(): Int = mUsersData.size
 }
