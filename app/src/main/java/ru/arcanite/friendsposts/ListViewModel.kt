@@ -10,6 +10,7 @@ import kotlinx.coroutines.runBlocking
 import retrofit2.Response
 import ru.arcanite.friendsposts.network.ApiHelper
 import ru.arcanite.friendsposts.network.UserApi
+import java.lang.Exception
 
 class ListViewModel : ViewModel() {
 
@@ -38,36 +39,43 @@ class ListViewModel : ViewModel() {
         val job2 = GlobalScope.launch {
             getUserPostsListRequest(apiHelper)
         }
-
         job2.join()
     }
 
     private fun getUserPostsListRequest(apiHelper: UserApi) {
-        val response: Response<List<UserApi.UserPosts>> = apiHelper.getPosts().execute()
-        if (response.isSuccessful && response.body() != null) run {
-            val json: List<UserApi.UserPosts>? = response.body()
-            if (json != null) {
-                for (u in json) {
-                    Log.d("UserInfoPost: ", u.toString())
-                    users[u.getUserId() - 1].setPosts(u.getTitle(), u.getBody())
+        try {
+            val response: Response<List<UserApi.UserPosts>> = apiHelper.getPosts().execute()
+            if (response.isSuccessful && response.body() != null) run {
+                val json: List<UserApi.UserPosts>? = response.body()
+                if (json != null) {
+                    for (u in json) {
+                        Log.d("UserInfoPost: ", u.toString())
+                        users[u.getUserId() - 1].setPosts(u.getTitle(), u.getBody())
+                    }
                 }
             }
+            mRequestState.postValue(RequestState.SUCCESS)
+        } catch (e: Exception) {
+            Log.e(javaClass.simpleName, e.printStackTrace().toString())
+            mRequestState.postValue(RequestState.FAILED)
         }
-
-        mRequestState.postValue(RequestState.SUCCESS)
     }
 
     private fun getUserListRequest(apiHelper: UserApi) {
-        val response: Response<List<UserApi.UserPlain>> = apiHelper.getAll().execute()
-
-        if (response.isSuccessful && response.body() != null) run {
-            val json: List<UserApi.UserPlain>? = response.body()
-            if (json != null) {
-                for (u in json) {
-                    Log.d("UserInfo: ", u.toString())
-                    users.add(User(u.getId(), u.getName(), u.getEmail(), u.getWebsite()))
+        try {
+            val response: Response<List<UserApi.UserPlain>> = apiHelper.getAll().execute()
+            if (response.isSuccessful && response.body() != null) run {
+                val json: List<UserApi.UserPlain>? = response.body()
+                if (json != null) {
+                    for (u in json) {
+                        Log.d("UserInfo: ", u.toString())
+                        users.add(User(u.getId(), u.getName(), u.getEmail(), u.getWebsite()))
+                    }
                 }
             }
+        } catch (e: Exception) {
+            Log.e(javaClass.simpleName, e.printStackTrace().toString())
+            mRequestState.postValue(RequestState.FAILED)
         }
     }
 }
