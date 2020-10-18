@@ -1,5 +1,7 @@
 package ru.arcanite.friendsposts.friends
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -35,7 +37,9 @@ class FriendsActivity : AppCompatActivity() {
         adapter.attachListener(object : OnItemClickListener {
             override fun onClick(user: User) {
                 Toast.makeText(baseContext, user.getName(), Toast.LENGTH_SHORT).show()
-                user.setExpanded(!user.isExpanded())
+                val url = user.getWebsite()
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("http://${url}"))
+                startActivity(intent)
             }
         })
     }

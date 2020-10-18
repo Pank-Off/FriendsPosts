@@ -1,9 +1,11 @@
 package ru.arcanite.friendsposts.friends
 
+import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -30,6 +32,7 @@ class Adapter : RecyclerView.Adapter<Adapter.FriendsViewHolder>() {
         private val mName: TextView = itemView.findViewById(R.id.name)
         private val mEmail: TextView = itemView.findViewById(R.id.email)
         private val recyclerView: RecyclerView = itemView.findViewById(R.id.posts_list)
+        val webView: TextView = itemView.findViewById(R.id.webView)
         val expandableLayout: LinearLayout = itemView.findViewById(R.id.expandableLayout)
 
         init {
@@ -55,8 +58,11 @@ class Adapter : RecyclerView.Adapter<Adapter.FriendsViewHolder>() {
         val user: User = mUsersData[position]
         holder.onBind(user)
         holder.itemView.setOnClickListener {
-            listener?.onClick(user)
+            user.setExpanded(!user.isExpanded())
             notifyItemChanged(position)
+        }
+        holder.webView.setOnClickListener {
+            listener?.onClick(user)
         }
         val isExpanded = user.isExpanded()
         holder.expandableLayout.visibility = if (isExpanded) View.VISIBLE else View.GONE
