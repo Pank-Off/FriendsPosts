@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">FriendsPosts</string>
     <string name="website"><u>WebSite</u></string>
+    <string name="refresh">Refresh</string>
+    <string name="load_friends">Load friends</string>
+    <string name="click">Click</string>
 </resources>

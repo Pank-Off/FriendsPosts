@@ -38,6 +38,7 @@ class ListFragment : Fragment() {
                 when (requestState) {
                     ListViewModel.RequestState.FAILED -> {
                         Toast.makeText(context, "Request error", Toast.LENGTH_SHORT).show()
+                        clickButton.text = getString(R.string.refresh)
                         clickButton.isEnabled = true
                     }
                     ListViewModel.RequestState.IN_PROGRESS -> {
