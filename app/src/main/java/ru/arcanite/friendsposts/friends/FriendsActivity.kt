@@ -20,7 +20,6 @@ class FriendsActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_friends)
-
         users = intent.getSerializableExtra(ListFragment.EXTRA_USERS) as List<User>
         for (u in users) {
             Log.d(javaClass.simpleName, u.toString())

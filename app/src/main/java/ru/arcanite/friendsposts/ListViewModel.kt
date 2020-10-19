@@ -1,23 +1,18 @@
 package ru.arcanite.friendsposts
 
-import android.util.Log
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import retrofit2.Response
-import ru.arcanite.friendsposts.network.ApiHelper
-import ru.arcanite.friendsposts.network.UserApi
-import java.lang.Exception
 
 class ListViewModel : ViewModel() {
 
-    private val mApiHelper: ApiHelper = ApiHelper()
-    val userRepo: UserRepo = UserRepo()
-    val users: ArrayList<User> = ArrayList()
-    private val mRequestState: MutableLiveData<RequestState> = MutableLiveData()
+    private val mUserRepo: UserRepo = UserRepo()
+    private val mUsers: LiveData<List<User>> = mUserRepo.getUsers()
+    private val mRequestState: MediatorLiveData<RequestState> = MediatorLiveData()
 
     init {
         mRequestState.value = RequestState.NONE
@@ -28,56 +23,26 @@ class ListViewModel : ViewModel() {
         NONE, IN_PROGRESS, SUCCESS, FAILED
     }
 
-    fun getUser() = users
+    fun getUser() = mUsers
     fun getRequest() = runBlocking {
         mRequestState.postValue(RequestState.IN_PROGRESS)
         GlobalScope.launch {
-            val apiHelper = mApiHelper.getUserApi()
-            val job1 = GlobalScope.launch {
-                getUserListRequest(apiHelper)
+            val job = GlobalScope.launch {
+                mUserRepo.getRequest()
             }
-            job1.join()
-            val job2 = GlobalScope.launch {
-                getUserPostsListRequest(apiHelper)
-            }
-            job2.join()
-        }
-    }
-
-    private fun getUserPostsListRequest(apiHelper: UserApi) {
-        try {
-            val response: Response<List<UserApi.UserPosts>> = apiHelper.getPosts().execute()
-            if (response.isSuccessful && response.body() != null) run {
-                val json: List<UserApi.UserPosts>? = response.body()
-                if (json != null) {
-                    for (u in json) {
-                        Log.d("UserInfoPost: ", u.toString())
-                        users[u.getUserId() - 1].setPosts(u.getTitle(), u.getBody())
+            job.join()
+            GlobalScope.launch(Dispatchers.Main) {
+                val progressLiveData: LiveData<UserRepo.RequestState> = UserRepo.getProgress()
+                mRequestState.addSource(progressLiveData) { requestState ->
+                    if (requestState == UserRepo.RequestState.SUCCESS) {
+                        mRequestState.postValue(RequestState.SUCCESS)
+                        mRequestState.removeSource(progressLiveData)
+                    } else if (requestState == UserRepo.RequestState.FAILED) {
+                        mRequestState.postValue(RequestState.FAILED)
+                        mRequestState.removeSource(progressLiveData)
                     }
                 }
             }
-            mRequestState.postValue(RequestState.SUCCESS)
-        } catch (e: Exception) {
-            Log.e(javaClass.simpleName, e.printStackTrace().toString())
-            mRequestState.postValue(RequestState.FAILED)
-        }
-    }
-
-    private fun getUserListRequest(apiHelper: UserApi) {
-        try {
-            val response: Response<List<UserApi.UserPlain>> = apiHelper.getAll().execute()
-            if (response.isSuccessful && response.body() != null) run {
-                val json: List<UserApi.UserPlain>? = response.body()
-                if (json != null) {
-                    for (u in json) {
-                        Log.d("UserInfo: ", u.toString())
-                        users.add(User(u.getId(), u.getName(), u.getEmail(), u.getWebsite()))
-                    }
-                }
-            }
-        } catch (e: Exception) {
-            Log.e(javaClass.simpleName, e.printStackTrace().toString())
-            mRequestState.postValue(RequestState.FAILED)
         }
     }
 }

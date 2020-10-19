@@ -47,9 +47,11 @@ class ListFragment : Fragment() {
                     }
                     ListViewModel.RequestState.SUCCESS -> {
                         Toast.makeText(context, "Request success", Toast.LENGTH_SHORT).show()
-                        val users: List<User>? = mListViewModel?.getUser()
-                        intent.putExtra(EXTRA_USERS, users as Serializable)
+                        mListViewModel?.getUser()?.observe(viewLifecycleOwner, { users ->
+                            intent.putExtra(EXTRA_USERS, users as Serializable)
+                        })
                         startActivity(intent)
+                        clickButton.text = getString(R.string.click)
                         clickButton.isEnabled = true
                     }
                 }
