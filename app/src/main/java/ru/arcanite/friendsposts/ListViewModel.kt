@@ -25,21 +25,23 @@ class ListViewModel : ViewModel() {
 
     fun getProgress(): LiveData<RequestState> = mRequestState
     enum class RequestState {
-        NONE, ERROR, IN_PROGRESS, SUCCESS, FAILED
+        NONE, IN_PROGRESS, SUCCESS, FAILED
     }
 
     fun getUser() = users
     fun getRequest() = runBlocking {
         mRequestState.postValue(RequestState.IN_PROGRESS)
-        val apiHelper = mApiHelper.getUserApi()
-        val job1 = GlobalScope.launch {
-            getUserListRequest(apiHelper)
+        GlobalScope.launch {
+            val apiHelper = mApiHelper.getUserApi()
+            val job1 = GlobalScope.launch {
+                getUserListRequest(apiHelper)
+            }
+            job1.join()
+            val job2 = GlobalScope.launch {
+                getUserPostsListRequest(apiHelper)
+            }
+            job2.join()
         }
-        job1.join()
-        val job2 = GlobalScope.launch {
-            getUserPostsListRequest(apiHelper)
-        }
-        job2.join()
     }
 
     private fun getUserPostsListRequest(apiHelper: UserApi) {
