@@ -18,7 +18,6 @@ class UserRepo {
     private val users: ArrayList<User> = ArrayList()
 
     companion object {
-
         private val mRequestState: MutableLiveData<RequestState> = MutableLiveData()
         fun getProgress() = mRequestState
     }

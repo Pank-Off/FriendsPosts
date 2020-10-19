@@ -32,9 +32,7 @@ interface UserApi {
 
         fun getUserId(): Int = userId
 
-
         fun getTitle(): String? = title
-
 
         fun getBody(): String? = body
 
