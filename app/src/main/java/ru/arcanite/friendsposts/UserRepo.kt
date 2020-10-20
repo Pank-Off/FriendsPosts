@@ -59,6 +59,7 @@ class UserRepo {
         try {
             val response: Response<List<UserApi.UserPlain>> = apiHelper.getAll().execute()
             if (response.isSuccessful && response.body() != null) run {
+                users.clear()
                 val json: List<UserApi.UserPlain>? = response.body()
                 if (json != null) {
                     for (u in json) {

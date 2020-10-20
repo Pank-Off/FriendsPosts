@@ -8,7 +8,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
-class ListViewModel : ViewModel() {
+class StartScreenViewModel : ViewModel() {
 
     private val mUserRepo: UserRepo = UserRepo()
     private val mUsers: LiveData<List<User>> = mUserRepo.getUsers()
