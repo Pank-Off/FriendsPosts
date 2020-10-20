@@ -8,7 +8,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import ru.arcanite.friendsposts.ListFragment
+import ru.arcanite.friendsposts.StartScreenFragment
 import ru.arcanite.friendsposts.R
 import ru.arcanite.friendsposts.User
 
@@ -20,7 +20,7 @@ class FriendsActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_friends)
-        users = intent.getSerializableExtra(ListFragment.EXTRA_USERS) as List<User>
+        users = intent.getSerializableExtra(StartScreenFragment.EXTRA_USERS) as List<User>
         for (u in users) {
             Log.d(javaClass.simpleName, u.toString())
         }
