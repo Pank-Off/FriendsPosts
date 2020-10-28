@@ -19,6 +19,11 @@ class StartScreenViewModel : ViewModel() {
     }
 
     fun getProgress(): LiveData<RequestState> = mRequestState
+
+    fun setNoneProgress() {
+        mRequestState.postValue(RequestState.NONE)
+    }
+
     enum class RequestState {
         NONE, IN_PROGRESS, SUCCESS, FAILED
     }

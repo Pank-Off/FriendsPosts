@@ -9,7 +9,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         if (savedInstanceState == null) {
-            Log.d(javaClass.simpleName,"savedInstanceState==null - lifeCycle")
+            Log.d(javaClass.simpleName, "savedInstanceState==null - lifeCycle")
             supportFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, StartScreenFragment(), "List")
                 .commit()
