@@ -31,7 +31,8 @@ class StartScreenFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mStartScreenViewModel = activity?.let { ViewModelProvider(it) }?.get(StartScreenViewModel::class.java)
+        mStartScreenViewModel =
+            activity?.let { ViewModelProvider(it) }?.get(StartScreenViewModel::class.java)
 
         Log.d(javaClass.simpleName, "onViewCreated - lifeCycle $isAdded")
         val intent = Intent(activity, FriendsActivity::class.java)
@@ -56,6 +57,7 @@ class StartScreenFragment : Fragment() {
                         mStartScreenViewModel?.getUser()?.observe(viewLifecycleOwner, { users ->
                             intent.putExtra(EXTRA_USERS, users as Serializable)
                         })
+                        mStartScreenViewModel?.setNoneProgress()
                         startActivity(intent)
                         progressBar.visibility = ProgressBar.INVISIBLE
                         clickButton.text = getString(R.string.click)

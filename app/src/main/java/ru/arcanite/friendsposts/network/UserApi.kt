@@ -19,7 +19,6 @@ interface UserApi {
 
         fun getId(): String? = id
 
-
         override fun toString(): String {
             return "UserPlain(id=$id, name=$name, email=$email, website=$website)"
         }

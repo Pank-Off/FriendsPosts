@@ -19,8 +19,10 @@ class FriendsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
+        Log.d(javaClass.simpleName, "savedInstanceState==null - lifeCycle")
         setContentView(R.layout.activity_friends)
         users = intent.getSerializableExtra(StartScreenFragment.EXTRA_USERS) as List<User>
+
         for (u in users) {
             Log.d(javaClass.simpleName, u.toString())
         }
